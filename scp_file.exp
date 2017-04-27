@@ -1,0 +1,29 @@
+#!/usr/bin/expect -f
+
+set timeout 20
+
+set username [lindex $argv 0]
+
+set password [lindex $argv 1]
+
+set hostname [lindex $argv 2]
+
+if {[llength $argv] == 0} {
+  send_user "Usage: scriptname username \'password\' hostname\n"
+  exit 1
+}
+
+# connect via scp
+spawn scp /opt/pcube/sm/server/bin/subscribers.csv "$username@$hostname:/var/tmp" 
+
+expect {
+-re ".*es.*o.*" {
+exp_send "yes\r"
+exp_continue
+}
+-re ".*sword.*" {
+exp_send "$password\r"
+}
+
+}
+interact
